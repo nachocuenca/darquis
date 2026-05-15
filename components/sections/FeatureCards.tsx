@@ -50,10 +50,10 @@ export function FeatureCards() {
 }
 
 const featureIconByKey: Record<string, string> = {
-  normativas: "/brand/icon/ChatGPT Image 16 may 2026, 00_56_36 (4).png",
-  word: "/brand/icon/ChatGPT Image 16 may 2026, 00_56_35 (1).png",
-  estilo: "/brand/icon/ChatGPT Image 16 may 2026, 00_56_35 (3).png",
-  rapidez: "/brand/icon/ChatGPT Image 16 may 2026, 00_56_35 (2).png",
+  normativas: "/brand/icon/normativa.png",
+  word: "/brand/icon/plantillas.png",
+  estilo: "/brand/icon/criterio.png",
+  rapidez: "/brand/icon/pdf.png",
 };
 
 function FeatureIcon({ name }: { name: string }) {
