@@ -9,7 +9,7 @@ export const legalPages = {
           "Titular: [Nombre fiscal pendiente]",
           "NIF: [NIF pendiente]",
           "Domicilio fiscal: [Domicilio fiscal pendiente]",
-          "Email de contacto: info@darquis.io",
+          "Email de contacto: info@darquis.com",
         ],
       },
       {
@@ -29,7 +29,7 @@ export const legalPages = {
         title: "Responsable",
         body: [
           "Responsable: [Nombre fiscal pendiente]",
-          "Email de contacto: info@darquis.io",
+          "Email de contacto: info@darquis.com",
         ],
       },
       {
@@ -49,7 +49,7 @@ export const legalPages = {
       {
         title: "Derechos",
         body: [
-          "Puedes solicitar información, rectificación o eliminación escribiendo a info@darquis.io.",
+          "Puedes solicitar información, rectificación o eliminación escribiendo a info@darquis.com.",
         ],
       },
     ],
@@ -67,7 +67,7 @@ export const legalPages = {
       },
       {
         title: "Contacto",
-        body: ["Para cualquier consulta, puedes escribir a info@darquis.io."],
+        body: ["Para cualquier consulta, puedes escribir a info@darquis.com."],
       },
     ],
   },

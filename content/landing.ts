@@ -1,14 +1,19 @@
 export const landing = {
   header: {
-    cta: "Lista de espera",
+    cta: "Unirme a la lista de espera",
   },
   hero: {
-    eyebrow: "Documentación técnica recurrente",
+    eyebrow: "Software para documentación técnica recurrente",
     title: "Documentación técnica,\nsin pelearte con Word.",
     subtitle:
-      "Darquis es una herramienta pensada para arquitectos, aparejadores e ingenieros que buscan una forma más clara y ordenada de elaborar certificados, informes y memorias técnicas recurrentes.",
-    cta: "Apúntate a la lista de espera",
+      "Darquis es un software para arquitectos, arquitectos técnicos, aparejadores e ingenieros que necesitan preparar certificados, informes técnicos y memorias con formularios guiados, estructura clara y documentos en PDF listos para revisar y firmar.",
+    cta: "Unirme a la lista de espera",
     microcopy: "Acceso prioritario a las primeras versiones · Sin compromiso",
+    bullets: [
+      "Formularios guiados",
+      "Documentos en PDF",
+      "Revisión y firma",
+    ],
   },
   problem: {
     eyebrow: "Por qué nace Darquis",
@@ -35,55 +40,65 @@ export const landing = {
     ],
   },
   featuresIntro: {
-    eyebrow: "Beneficios",
-    title: "Por qué elegir Darquis",
+    eyebrow: "Ahorro de tiempo",
+    title: "Menos Word. Más documento listo.",
+    text:
+      "Rellena datos una vez y Darquis te ayuda a ordenar certificados, informes y memorias para revisar y firmar.",
   },
   features: [
     {
       key: "normativas",
-      label: "Sin normativas",
-      title: "La normativa no debería perseguirte",
+      label: "Normativa",
+      title: "Menos dudas mientras rellenas",
       text:
-        "Darquis tiene en cuenta la normativa desde el inicio del documento. Te guía en la estructura y en la información necesaria mientras trabajas, evitando dudas, revisiones de última hora y errores habituales.",
+        "La estructura te pide la información clave desde el inicio, para reducir revisiones y olvidos habituales.",
     },
     {
       key: "word",
-      label: "Adiós Word",
-      title: "Copiar y pegar no es un método",
+      label: "Plantillas Word",
+      title: "Deja de rehacer plantillas",
       text:
-        "Nada de pelearte con Word ni de reutilizar plantillas obsoletas. Darquis ordena los datos y genera documentación clara y profesional, sin trabajo artesanal ni revisiones innecesarias.",
+        "Sin copiar, pegar y arreglar formatos. Los datos quedan ordenados para generar documentación consistente.",
     },
     {
       key: "estilo",
-      label: "Tu estilo",
-      title: "No te adaptes al documento, que se adapte a ti",
+      label: "Tu criterio",
+      title: "Mantén tu forma de trabajar",
       text:
-        "Las plantillas se ajustan a tu forma de trabajar y a tu criterio técnico. Todos los documentos mantienen el mismo formato, estructura y orden, independientemente del tipo de trabajo.",
+        "Plantillas alineadas con tu estilo técnico, con formato y orden comunes en cada documento.",
     },
     {
       key: "rapidez",
-      label: "Rapidez",
-      title: "Menos vueltas, más resultado",
+      label: "PDF",
+      title: "Listo para revisar y firmar",
       text:
-        "Eliges el tipo de trabajo y completas los formularios guiados. El documento se genera en PDF, listo para revisar, firmar y presentar, sin procesos innecesarios.",
+        "Completas el formulario guiado y obtienes un PDF preparado para revisión, firma y presentación.",
     },
   ],
-  documents: {
-    title: "Documentos que puedes generar",
+  workflow: {
+    eyebrow: "Cómo funciona",
+    title: "De una plantilla Word dispersa a un PDF listo para revisar.",
     text:
-      "Darquis está pensada para la documentación técnica habitual en el trabajo diario de arquitectos y arquitectos técnicos.",
+      "Darquis convierte el trabajo repetitivo en un flujo guiado: eliges el documento, completas apartados, revisas la estructura y exportas una versión lista para revisar y firmar.",
+  },
+  documents: {
+    eyebrow: "Documentos",
+    title: "Documentación técnica habitual, ordenada en un mismo sistema",
+    text:
+      "Darquis está pensada para la documentación recurrente del trabajo diario de arquitectos, arquitectos técnicos, aparejadores e ingenieros.",
     categories: [
-      { key: "certificados", name: "Certificados", description: "Segunda ocupación, antigüedad..." },
-      { key: "informes", name: "Informes técnicos", description: "Pericial, tasación..." },
-      { key: "memorias", name: "Memorias técnicas", description: "Aperturas, piscinas..." },
-      { key: "anexos", name: "Anexos", description: "Declaración responsable, contratos..." },
+      { key: "certificados", name: "Certificados", description: "Segunda ocupación, antigüedad y documentación recurrente." },
+      { key: "informes", name: "Informes técnicos", description: "Periciales, tasaciones y análisis técnicos." },
+      { key: "memorias", name: "Memorias técnicas", description: "Aperturas, reformas y trabajos justificativos." },
+      { key: "anexos", name: "Anexos", description: "Declaraciones responsables, contratos y documentación complementaria." },
     ],
     extras: ["Aperturas", "Reformas", "Herramientas", "Otros recursos"],
   },
   waitlist: {
+    eyebrow: "Lista de espera",
     title: "Sé de los primeros en usar Darquis.",
     text:
-      "Estamos preparando las primeras versiones. Si quieres probar Darquis antes que nadie y participar en su evolución, apúntate a la lista de espera.",
+      "Estamos preparando las primeras versiones. Si quieres probar Darquis antes que nadie y ayudarnos a diseñar un software realmente útil para técnicos, únete a la lista de espera.",
     cta: "Unirme a la lista de espera",
     microcopy: "Sin compromiso · Sin spam",
     confirmationTitle: "Solicitud recibida.",
@@ -99,7 +114,7 @@ export const landing = {
     { value: "otro-perfil-tecnico", label: "Otro perfil técnico" },
   ],
   footer: {
-    email: "info@darquis.io",
+    email: "info@darquis.com",
     legal: [
       { label: "Aviso legal", href: "/aviso-legal" },
       { label: "Política de privacidad", href: "/privacidad" },

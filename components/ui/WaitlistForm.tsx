@@ -6,13 +6,16 @@ import { landing } from "@/content/landing";
 import { validateWaitlistInput, type WaitlistErrors } from "@/lib/validations";
 
 type WaitlistFormProps = {
-  ctaLabel: string;
-  source: "hero" | "final";
+  ctaLabel?: string;
+  source?: string;
 };
 
 type Status = "idle" | "loading" | "success" | "error";
 
-export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
+export function WaitlistForm({
+  ctaLabel = landing.waitlist.cta,
+  source = "modal",
+}: WaitlistFormProps) {
   const [email, setEmail] = useState("");
   const [profile, setProfile] = useState("");
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
@@ -89,18 +92,21 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
 
   return (
     <form
-      className="rounded-lg border border-[rgba(35,151,173,0.18)] bg-white/95 p-3.5 shadow-[0_18px_45px_rgba(35,75,105,0.10)] sm:p-4"
+      className="relative rounded-lg border border-[rgba(35,151,173,0.18)] bg-white/86 p-4 shadow-[0_20px_60px_rgba(35,75,105,0.12)] backdrop-blur sm:p-5"
       onSubmit={handleSubmit}
       noValidate
     >
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-4">
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-[var(--darquis-ink)]" htmlFor={`${source}-email`}>
+          <label
+            className="mb-2 block text-sm font-semibold text-[var(--darquis-ink)]"
+            htmlFor={`${source}-email`}
+          >
             Email profesional
           </label>
           <input
             id={`${source}-email`}
-            className="darquis-focus h-11 w-full rounded-lg border border-[var(--darquis-border)] bg-white px-3.5 text-base text-[var(--darquis-ink)] shadow-sm transition placeholder:text-slate-400"
+            className="darquis-focus h-13 w-full rounded-lg border border-[var(--darquis-border)] bg-white px-4 text-[1.02rem] text-[var(--darquis-ink)] shadow-sm transition placeholder:text-slate-400 hover:border-[rgba(35,151,173,0.42)]"
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -118,12 +124,15 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
         </div>
 
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-[var(--darquis-ink)]" htmlFor={`${source}-profile`}>
+          <label
+            className="mb-2 block text-sm font-semibold text-[var(--darquis-ink)]"
+            htmlFor={`${source}-profile`}
+          >
             Perfil profesional
           </label>
           <select
             id={`${source}-profile`}
-            className="darquis-focus h-11 w-full rounded-lg border border-[var(--darquis-border)] bg-white px-3.5 text-base text-[var(--darquis-ink)] shadow-sm transition"
+            className="darquis-focus h-13 w-full rounded-lg border border-[var(--darquis-border)] bg-white px-4 text-[1.02rem] text-[var(--darquis-ink)] shadow-sm transition hover:border-[rgba(35,151,173,0.42)]"
             value={profile}
             onChange={(event) => setProfile(event.target.value)}
             aria-describedby={fieldErrors.profile ? profileErrorId : undefined}
@@ -143,38 +152,18 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
           ) : null}
         </div>
 
-        <div className="rounded-lg border border-[rgba(16,24,32,0.08)] bg-[#fbfdfe] p-3 sm:col-span-2">
-          <label className="flex gap-3 text-sm leading-6 text-[var(--darquis-muted)]" htmlFor={`${source}-privacy`}>
-            <input
-              id={`${source}-privacy`}
-              className="darquis-focus mt-1 h-4 w-4 shrink-0 rounded border-[var(--darquis-border)] accent-[var(--darquis-blue)]"
-              type="checkbox"
-              checked={privacyAccepted}
-              onChange={(event) => setPrivacyAccepted(event.target.checked)}
-              aria-describedby={fieldErrors.privacyAccepted ? privacyErrorId : undefined}
-              aria-invalid={Boolean(fieldErrors.privacyAccepted)}
-              required
-            />
-            <span>
-              Acepto la{" "}
-              <Link
-                className="darquis-focus rounded-sm font-semibold text-[var(--darquis-blue-dark)] underline underline-offset-4"
-                href="/privacidad"
-              >
-                política de privacidad
-              </Link>{" "}
-              y el tratamiento de mis datos para recibir información sobre Darquis.
-            </span>
-          </label>
-          {fieldErrors.privacyAccepted ? (
-            <p id={privacyErrorId} className="mt-2 text-sm font-medium text-red-700">
-              {fieldErrors.privacyAccepted}
-            </p>
-          ) : null}
+        <div>
+          <PrivacyField
+            source={source}
+            checked={privacyAccepted}
+            onChange={setPrivacyAccepted}
+            error={fieldErrors.privacyAccepted}
+            errorId={privacyErrorId}
+          />
         </div>
 
         <button
-          className="darquis-focus flex h-11 w-full items-center justify-center rounded-lg bg-[var(--darquis-blue)] px-5 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(35,151,173,0.24)] transition hover:bg-[var(--darquis-blue-dark)] disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2 sm:text-base"
+          className="darquis-focus mt-1 flex h-13 w-full items-center justify-center rounded-lg bg-[var(--darquis-blue)] px-5 text-[1.05rem] font-semibold text-white shadow-none transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--darquis-blue-dark)] disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-70"
           type="submit"
           disabled={status === "loading"}
         >
@@ -188,5 +177,54 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
         ) : null}
       </div>
     </form>
+  );
+}
+
+function PrivacyField({
+  source,
+  checked,
+  onChange,
+  error,
+  errorId,
+}: {
+  source: string;
+  checked: boolean;
+  onChange: (checked: boolean) => void;
+  error?: string;
+  errorId: string;
+}) {
+  return (
+    <div className="rounded-lg border border-[rgba(16,24,32,0.08)] bg-[#fbfdfe]/92 px-3 py-3">
+      <label
+        className="flex gap-2.5 text-left text-sm leading-6 text-[var(--darquis-muted)]"
+        htmlFor={`${source}-privacy`}
+      >
+        <input
+          id={`${source}-privacy`}
+          className="darquis-focus mt-1 h-4 w-4 shrink-0 rounded border-[var(--darquis-border)] accent-[var(--darquis-blue)]"
+          type="checkbox"
+          checked={checked}
+          onChange={(event) => onChange(event.target.checked)}
+          aria-describedby={error ? errorId : undefined}
+          aria-invalid={Boolean(error)}
+          required
+        />
+        <span>
+          Acepto la{" "}
+          <Link
+            className="darquis-focus rounded-sm font-semibold text-[var(--darquis-blue-dark)] underline underline-offset-4"
+            href="/privacidad"
+          >
+            política de privacidad
+          </Link>{" "}
+          y recibir información sobre Darquis.
+        </span>
+      </label>
+      {error ? (
+        <p id={errorId} className="mt-2 text-sm font-medium text-red-700">
+          {error}
+        </p>
+      ) : null}
+    </div>
   );
 }

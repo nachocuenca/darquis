@@ -1,39 +1,46 @@
+import Image from "next/image";
 import { landing } from "@/content/landing";
 
 export function FeatureCards() {
   return (
     <section className="relative px-4 py-10 sm:px-6 sm:py-14">
-      <div className="mx-auto w-full max-w-6xl">
-        <div className="text-center">
+      <div className="darquis-section-shell mx-auto w-full max-w-6xl rounded-lg border border-[rgba(35,151,173,0.14)] px-4 py-9 shadow-[0_20px_70px_rgba(35,75,105,0.06)] sm:px-6 sm:py-11">
+        <div className="darquis-reveal mx-auto max-w-2xl text-center">
           <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--darquis-blue-dark)]">
             {landing.featuresIntro.eyebrow}
           </p>
           <h2 className="mt-3 text-3xl font-semibold leading-tight text-[var(--darquis-ink)] sm:text-4xl">
             {landing.featuresIntro.title}
           </h2>
+          <p className="mt-3 text-base leading-7 text-[var(--darquis-muted)] sm:text-lg">
+            {landing.featuresIntro.text}
+          </p>
         </div>
 
-        <div className="mt-7 grid gap-4 md:grid-cols-2">
-          {landing.features.map((feature) => (
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          {landing.features.map((feature, index) => (
             <article
               key={feature.key}
-              className="group relative overflow-hidden rounded-lg border border-[rgba(35,151,173,0.18)] bg-white/90 p-5 shadow-[0_14px_42px_rgba(35,75,105,0.08)] transition hover:-translate-y-0.5 hover:border-[rgba(35,151,173,0.36)] hover:shadow-[0_22px_55px_rgba(35,75,105,0.12)] sm:p-6"
+              className="darquis-reveal relative rounded-lg border border-[rgba(35,151,173,0.16)] bg-white/92 p-5 shadow-[0_10px_28px_rgba(35,75,105,0.06)] transition duration-200 hover:border-[rgba(35,151,173,0.30)] hover:shadow-[0_16px_36px_rgba(35,75,105,0.10)]"
             >
-              <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-[4rem] bg-[rgba(104,132,255,0.08)]" />
-              <div className="relative flex items-start gap-4">
+              <div className="absolute bottom-3 right-4 text-4xl font-semibold text-[rgba(31,166,186,0.07)]">
+                0{index + 1}
+              </div>
+
+              <div className="relative flex items-center gap-5">
                 <FeatureIcon name={feature.key} />
-                <div>
-                  <span className="inline-flex rounded-md bg-[var(--darquis-blue-soft)] px-2.5 py-1 text-[0.7rem] font-semibold uppercase text-[var(--darquis-blue-dark)]">
+                <div className="min-w-0">
+                  <span className="inline-flex rounded-md border border-[rgba(31,166,186,0.14)] bg-[var(--darquis-blue-soft)] px-3 py-1 text-xs font-semibold uppercase tracking-[0.02em] text-[var(--darquis-blue-dark)]">
                     {feature.label}
                   </span>
                   <h3 className="mt-3 text-xl font-semibold leading-tight text-[var(--darquis-ink)]">
                     {feature.title}
                   </h3>
+                  <p className="mt-3 text-[0.95rem] leading-6 text-[var(--darquis-muted)]">
+                    {feature.text}
+                  </p>
                 </div>
               </div>
-              <p className="relative mt-4 text-[0.96rem] leading-7 text-[var(--darquis-muted)]">
-                {feature.text}
-              </p>
             </article>
           ))}
         </div>
@@ -42,50 +49,19 @@ export function FeatureCards() {
   );
 }
 
+const featureIconByKey: Record<string, string> = {
+  normativas: "/brand/icon/ChatGPT Image 16 may 2026, 00_56_36 (4).png",
+  word: "/brand/icon/ChatGPT Image 16 may 2026, 00_56_35 (1).png",
+  estilo: "/brand/icon/ChatGPT Image 16 may 2026, 00_56_35 (3).png",
+  rapidez: "/brand/icon/ChatGPT Image 16 may 2026, 00_56_35 (2).png",
+};
+
 function FeatureIcon({ name }: { name: string }) {
+  const src = featureIconByKey[name] ?? featureIconByKey.normativas;
+
   return (
-    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[rgba(35,151,173,0.24)] bg-[linear-gradient(145deg,#ffffff,#e8f6f8)] text-[var(--darquis-blue)] shadow-[0_12px_26px_rgba(35,75,105,0.10)]">
-      <svg
-        aria-hidden="true"
-        className="h-6 w-6"
-        fill="none"
-        stroke="currentColor"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeWidth="1.8"
-        viewBox="0 0 24 24"
-      >
-        {name === "normativas" ? (
-          <>
-            <path d="M7 4h7l4 4v12H7z" />
-            <path d="M14 4v5h4" />
-            <path d="M9.5 14.5 11 16l3.5-4" />
-          </>
-        ) : null}
-        {name === "word" ? (
-          <>
-            <path d="M4 7h16" />
-            <path d="M4 12h16" />
-            <path d="M4 17h11" />
-            <path d="M8 4v16" />
-          </>
-        ) : null}
-        {name === "estilo" ? (
-          <>
-            <path d="M5 5h14v14H5z" />
-            <path d="M8 9h8" />
-            <path d="M8 13h5" />
-            <path d="m15.5 16.5 3 3" />
-          </>
-        ) : null}
-        {name === "rapidez" ? (
-          <>
-            <path d="M12 4a8 8 0 1 1-7.45 5" />
-            <path d="M12 8v5l3 2" />
-            <path d="M4 4h5" />
-          </>
-        ) : null}
-      </svg>
+    <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">
+      <Image src={src} alt="" fill sizes="5rem" className="object-contain" />
     </div>
   );
 }

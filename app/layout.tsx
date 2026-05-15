@@ -12,15 +12,18 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const title = "Darquis · Documentación técnica sin pelearte con Word";
+const title = "Darquis · Software para documentación técnica de arquitectos";
 const description =
-  "Herramienta en desarrollo para arquitectos, aparejadores e ingenieros que quieren elaborar certificados, informes y memorias técnicas recurrentes de forma más clara y ordenada.";
+  "Herramienta en desarrollo para arquitectos, arquitectos técnicos, aparejadores e ingenieros que necesitan preparar certificados, informes técnicos y memorias sin pelearse con plantillas Word.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://darquis.com"),
   title,
   description,
   applicationName: "Darquis",
+  icons: {
+    icon: "/favicon.ico",
+  },
   openGraph: {
     title,
     description,
