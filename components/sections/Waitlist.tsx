@@ -3,26 +3,26 @@ import { landing } from "@/content/landing";
 
 export function Waitlist() {
   return (
-    <section id="lista-de-espera" className="py-16 sm:py-20">
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="overflow-hidden rounded-lg border border-[rgba(35,151,173,0.22)] bg-[linear-gradient(135deg,#0f2b35_0%,#126d80_58%,#2397ad_100%)] shadow-[0_30px_90px_rgba(16,24,32,0.18)]">
-          <div className="grid gap-8 p-5 sm:p-8 lg:grid-cols-[0.95fr_0.75fr] lg:p-12">
-            <div className="flex flex-col justify-center">
-              <p className="text-sm font-semibold uppercase text-white/70">
-                Lista de espera
-              </p>
-              <h2 className="mt-4 max-w-2xl text-3xl font-semibold leading-tight text-white sm:text-4xl">
-                {landing.waitlist.title}
-              </h2>
-              <p className="mt-4 max-w-2xl text-lg leading-8 text-white/80">{landing.waitlist.text}</p>
-              <p className="mt-6 max-w-xl text-sm leading-6 text-white/70">
-                Darquis está en desarrollo. El acceso se abrirá de forma progresiva para recoger feedback real de profesionales técnicos.
-              </p>
-            </div>
+    <section id="lista-de-espera" className="relative px-4 py-10 sm:px-6 sm:py-14">
+      <div className="darquis-cloud darquis-cloud-c" aria-hidden="true" />
 
-            <WaitlistForm ctaLabel={landing.waitlist.cta} source="final" />
-          </div>
+      <div className="mx-auto grid w-full max-w-6xl items-center gap-7 lg:grid-cols-[0.86fr_0.92fr]">
+        <div className="text-center lg:text-left">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--darquis-blue-dark)]">
+            Lista de espera
+          </p>
+          <h2 className="mt-3 text-3xl font-semibold leading-tight text-[var(--darquis-ink)] sm:text-4xl">
+            {landing.waitlist.title}
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-base leading-7 text-[var(--darquis-muted)] sm:text-lg lg:mx-0">
+            {landing.waitlist.text}
+          </p>
+          <p className="mt-4 text-sm font-medium text-[var(--darquis-blue-dark)]">
+            {landing.waitlist.microcopy}
+          </p>
         </div>
+
+        <WaitlistForm ctaLabel={landing.waitlist.cta} source="final" />
       </div>
     </section>
   );

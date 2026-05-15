@@ -2,31 +2,38 @@ import { landing } from "@/content/landing";
 
 export function FeatureCards() {
   return (
-    <section className="py-16 sm:py-20">
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl">
-          <p className="text-sm font-semibold uppercase text-[var(--darquis-blue-dark)]">
-            Beneficios
+    <section className="relative px-4 py-10 sm:px-6 sm:py-14">
+      <div className="mx-auto w-full max-w-6xl">
+        <div className="text-center">
+          <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--darquis-blue-dark)]">
+            {landing.featuresIntro.eyebrow}
           </p>
-          <h2 className="mt-4 text-3xl font-semibold leading-tight text-[var(--darquis-ink)] sm:text-4xl">
-            Una forma más ordenada de preparar documentación técnica.
+          <h2 className="mt-3 text-3xl font-semibold leading-tight text-[var(--darquis-ink)] sm:text-4xl">
+            {landing.featuresIntro.title}
           </h2>
         </div>
 
-        <div className="mt-10 grid gap-5 md:grid-cols-2">
+        <div className="mt-7 grid gap-4 md:grid-cols-2">
           {landing.features.map((feature) => (
             <article
               key={feature.key}
-              className="group rounded-lg border border-[var(--darquis-border)] bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-[rgba(35,151,173,0.36)] hover:shadow-[0_22px_55px_rgba(16,24,32,0.08)]"
+              className="group relative overflow-hidden rounded-lg border border-[rgba(35,151,173,0.18)] bg-white/90 p-5 shadow-[0_14px_42px_rgba(35,75,105,0.08)] transition hover:-translate-y-0.5 hover:border-[rgba(35,151,173,0.36)] hover:shadow-[0_22px_55px_rgba(35,75,105,0.12)] sm:p-6"
             >
-              <div className="mb-6 flex items-center justify-between gap-4">
+              <div className="absolute right-0 top-0 h-24 w-24 rounded-bl-[4rem] bg-[rgba(104,132,255,0.08)]" />
+              <div className="relative flex items-start gap-4">
                 <FeatureIcon name={feature.key} />
-                <span className="rounded-lg bg-[var(--darquis-blue-soft)] px-3 py-1.5 text-xs font-semibold uppercase text-[var(--darquis-blue-dark)]">
-                  {feature.label}
-                </span>
+                <div>
+                  <span className="inline-flex rounded-md bg-[var(--darquis-blue-soft)] px-2.5 py-1 text-[0.7rem] font-semibold uppercase text-[var(--darquis-blue-dark)]">
+                    {feature.label}
+                  </span>
+                  <h3 className="mt-3 text-xl font-semibold leading-tight text-[var(--darquis-ink)]">
+                    {feature.title}
+                  </h3>
+                </div>
               </div>
-              <h3 className="text-xl font-semibold leading-tight text-[var(--darquis-ink)]">{feature.title}</h3>
-              <p className="mt-4 text-base leading-7 text-[var(--darquis-muted)]">{feature.text}</p>
+              <p className="relative mt-4 text-[0.96rem] leading-7 text-[var(--darquis-muted)]">
+                {feature.text}
+              </p>
             </article>
           ))}
         </div>
@@ -37,7 +44,7 @@ export function FeatureCards() {
 
 function FeatureIcon({ name }: { name: string }) {
   return (
-    <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-[rgba(35,151,173,0.22)] bg-white text-[var(--darquis-blue)] shadow-sm">
+    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg border border-[rgba(35,151,173,0.24)] bg-[linear-gradient(145deg,#ffffff,#e8f6f8)] text-[var(--darquis-blue)] shadow-[0_12px_26px_rgba(35,75,105,0.10)]">
       <svg
         aria-hidden="true"
         className="h-6 w-6"
@@ -52,15 +59,14 @@ function FeatureIcon({ name }: { name: string }) {
           <>
             <path d="M7 4h7l4 4v12H7z" />
             <path d="M14 4v5h4" />
-            <path d="M10 13h5" />
-            <path d="M10 17h4" />
+            <path d="M9.5 14.5 11 16l3.5-4" />
           </>
         ) : null}
         {name === "word" ? (
           <>
-            <path d="M5 6h14" />
-            <path d="M5 12h14" />
-            <path d="M5 18h10" />
+            <path d="M4 7h16" />
+            <path d="M4 12h16" />
+            <path d="M4 17h11" />
             <path d="M8 4v16" />
           </>
         ) : null}
@@ -69,7 +75,7 @@ function FeatureIcon({ name }: { name: string }) {
             <path d="M5 5h14v14H5z" />
             <path d="M8 9h8" />
             <path d="M8 13h5" />
-            <path d="M16 16l3 3" />
+            <path d="m15.5 16.5 3 3" />
           </>
         ) : null}
         {name === "rapidez" ? (

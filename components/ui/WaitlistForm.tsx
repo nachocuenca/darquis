@@ -68,7 +68,7 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
   if (status === "success") {
     return (
       <div
-        className="rounded-lg border border-[rgba(35,151,173,0.22)] bg-white p-5 shadow-[0_18px_55px_rgba(16,24,32,0.08)] sm:p-6"
+        className="rounded-lg border border-[rgba(35,151,173,0.22)] bg-white/95 p-5 shadow-[0_18px_45px_rgba(35,75,105,0.10)]"
         role="status"
         aria-live="polite"
       >
@@ -83,23 +83,24 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
   }
 
   const emailErrorId = `${source}-email-error`;
+  const profileErrorId = `${source}-profile-error`;
   const privacyErrorId = `${source}-privacy-error`;
   const formStatusId = `${source}-form-status`;
 
   return (
     <form
-      className="rounded-lg border border-[var(--darquis-border)] bg-white p-4 shadow-[0_18px_55px_rgba(16,24,32,0.08)] sm:p-5"
+      className="rounded-lg border border-[rgba(35,151,173,0.18)] bg-white/95 p-3.5 shadow-[0_18px_45px_rgba(35,75,105,0.10)] sm:p-4"
       onSubmit={handleSubmit}
       noValidate
     >
-      <div className="grid gap-3">
+      <div className="grid gap-3 sm:grid-cols-2">
         <div>
-          <label className="mb-2 block text-sm font-medium text-[var(--darquis-ink)]" htmlFor={`${source}-email`}>
+          <label className="mb-1.5 block text-sm font-semibold text-[var(--darquis-ink)]" htmlFor={`${source}-email`}>
             Email profesional
           </label>
           <input
             id={`${source}-email`}
-            className="darquis-focus h-12 w-full rounded-lg border border-[var(--darquis-border)] bg-white px-4 text-base text-[var(--darquis-ink)] shadow-sm transition placeholder:text-slate-400"
+            className="darquis-focus h-11 w-full rounded-lg border border-[var(--darquis-border)] bg-white px-3.5 text-base text-[var(--darquis-ink)] shadow-sm transition placeholder:text-slate-400"
             type="email"
             value={email}
             onChange={(event) => setEmail(event.target.value)}
@@ -110,21 +111,23 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
             required
           />
           {fieldErrors.email ? (
-            <p id={emailErrorId} className="mt-2 text-sm font-medium text-red-700">
+            <p id={emailErrorId} className="mt-1.5 text-sm font-medium text-red-700">
               {fieldErrors.email}
             </p>
           ) : null}
         </div>
 
         <div>
-          <label className="mb-2 block text-sm font-medium text-[var(--darquis-ink)]" htmlFor={`${source}-profile`}>
+          <label className="mb-1.5 block text-sm font-semibold text-[var(--darquis-ink)]" htmlFor={`${source}-profile`}>
             Perfil profesional
           </label>
           <select
             id={`${source}-profile`}
-            className="darquis-focus h-12 w-full rounded-lg border border-[var(--darquis-border)] bg-white px-4 text-base text-[var(--darquis-ink)] shadow-sm transition"
+            className="darquis-focus h-11 w-full rounded-lg border border-[var(--darquis-border)] bg-white px-3.5 text-base text-[var(--darquis-ink)] shadow-sm transition"
             value={profile}
             onChange={(event) => setProfile(event.target.value)}
+            aria-describedby={fieldErrors.profile ? profileErrorId : undefined}
+            aria-invalid={Boolean(fieldErrors.profile)}
           >
             <option value="">Selecciona una opción</option>
             {landing.profiles.map((option) => (
@@ -133,9 +136,14 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
               </option>
             ))}
           </select>
+          {fieldErrors.profile ? (
+            <p id={profileErrorId} className="mt-1.5 text-sm font-medium text-red-700">
+              {fieldErrors.profile}
+            </p>
+          ) : null}
         </div>
 
-        <div className="rounded-lg border border-[rgba(16,24,32,0.08)] bg-[#fbfdfe] p-3">
+        <div className="rounded-lg border border-[rgba(16,24,32,0.08)] bg-[#fbfdfe] p-3 sm:col-span-2">
           <label className="flex gap-3 text-sm leading-6 text-[var(--darquis-muted)]" htmlFor={`${source}-privacy`}>
             <input
               id={`${source}-privacy`}
@@ -150,7 +158,7 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
             <span>
               Acepto la{" "}
               <Link
-                className="darquis-focus rounded-sm font-medium text-[var(--darquis-blue-dark)] underline underline-offset-4"
+                className="darquis-focus rounded-sm font-semibold text-[var(--darquis-blue-dark)] underline underline-offset-4"
                 href="/privacidad"
               >
                 política de privacidad
@@ -166,7 +174,7 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
         </div>
 
         <button
-          className="darquis-focus flex h-12 w-full items-center justify-center rounded-lg bg-[var(--darquis-blue)] px-5 text-base font-semibold text-white shadow-[0_16px_35px_rgba(35,151,173,0.25)] transition hover:bg-[var(--darquis-blue-dark)] disabled:cursor-not-allowed disabled:opacity-70"
+          className="darquis-focus flex h-11 w-full items-center justify-center rounded-lg bg-[var(--darquis-blue)] px-5 text-sm font-semibold text-white shadow-[0_14px_30px_rgba(35,151,173,0.24)] transition hover:bg-[var(--darquis-blue-dark)] disabled:cursor-not-allowed disabled:opacity-70 sm:col-span-2 sm:text-base"
           type="submit"
           disabled={status === "loading"}
         >
@@ -174,7 +182,7 @@ export function WaitlistForm({ ctaLabel, source }: WaitlistFormProps) {
         </button>
       </div>
 
-      <div id={formStatusId} className="mt-3 min-h-6" aria-live="polite">
+      <div id={formStatusId} className="mt-2 min-h-5" aria-live="polite">
         {message && status === "error" ? (
           <p className="text-sm leading-6 text-red-700">{message}</p>
         ) : null}

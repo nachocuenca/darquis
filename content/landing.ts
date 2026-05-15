@@ -3,10 +3,10 @@ export const landing = {
     cta: "Lista de espera",
   },
   hero: {
-    eyebrow: "Software en desarrollo para documentación técnica",
-    title: "Olvídate de las plantillas Word y de la normativa infinita.",
+    eyebrow: "Documentación técnica recurrente",
+    title: "Documentación técnica,\nsin pelearte con Word.",
     subtitle:
-      "Pensado para arquitectos y arquitectos técnicos que elaboran certificados, informes y memorias técnicas de forma rápida, con formularios guiados y documentos listos para firmar.",
+      "Darquis es una herramienta pensada para arquitectos, aparejadores e ingenieros que buscan una forma más clara y ordenada de elaborar certificados, informes y memorias técnicas recurrentes.",
     cta: "Apúntate a la lista de espera",
     microcopy: "Acceso prioritario a las primeras versiones · Sin compromiso",
   },
@@ -33,6 +33,10 @@ export const landing = {
         text: "Certificados, informes y memorias con estructuras similares que consumen más tiempo del necesario.",
       },
     ],
+  },
+  featuresIntro: {
+    eyebrow: "Beneficios",
+    title: "Por qué elegir Darquis",
   },
   features: [
     {
@@ -65,24 +69,23 @@ export const landing = {
     },
   ],
   documents: {
-    title: "Los documentos que haces una y otra vez.",
+    title: "Documentos que puedes generar",
     text:
       "Darquis está pensada para la documentación técnica habitual en el trabajo diario de arquitectos y arquitectos técnicos.",
     categories: [
-      { name: "Certificados", description: "Documentos recurrentes listos para revisar." },
-      { name: "Informes", description: "Estructura clara para exposición técnica." },
-      { name: "Memorias", description: "Orden para trabajos y actuaciones habituales." },
-      { name: "Aperturas", description: "Documentación administrativa con criterio." },
-      { name: "Reformas", description: "Datos consistentes de principio a fin." },
-      { name: "Herramientas", description: "Recursos de apoyo para el trabajo diario." },
-      { name: "Otros recursos", description: "Plantillas y utilidades en evolución." },
+      { key: "certificados", name: "Certificados", description: "Segunda ocupación, antigüedad..." },
+      { key: "informes", name: "Informes técnicos", description: "Pericial, tasación..." },
+      { key: "memorias", name: "Memorias técnicas", description: "Aperturas, piscinas..." },
+      { key: "anexos", name: "Anexos", description: "Declaración responsable, contratos..." },
     ],
+    extras: ["Aperturas", "Reformas", "Herramientas", "Otros recursos"],
   },
   waitlist: {
     title: "Sé de los primeros en usar Darquis.",
     text:
       "Estamos preparando las primeras versiones. Si quieres probar Darquis antes que nadie y participar en su evolución, apúntate a la lista de espera.",
     cta: "Unirme a la lista de espera",
+    microcopy: "Sin compromiso · Sin spam",
     confirmationTitle: "Solicitud recibida.",
     confirmationText:
       "Gracias por apuntarte. Te avisaremos en cuanto el acceso esté disponible para los primeros usuarios de Darquis.",

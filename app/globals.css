@@ -1,12 +1,12 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7fafb;
+  --background: #f7fbff;
   --foreground: #101820;
   --darquis-blue: #2397ad;
   --darquis-blue-dark: #126d80;
   --darquis-blue-soft: #e8f6f8;
-  --darquis-border: #dbe6ea;
+  --darquis-border: #d9e7ed;
   --darquis-muted: #5f6f78;
   --darquis-ink: #101820;
 }
@@ -43,8 +43,9 @@ body {
   min-height: 100vh;
   overflow-x: clip;
   background:
-    radial-gradient(circle at top left, rgba(35, 151, 173, 0.12), transparent 34rem),
-    linear-gradient(180deg, #fbfdfe 0%, var(--background) 52%, #ffffff 100%);
+    radial-gradient(circle at 18% 10%, rgba(104, 132, 255, 0.15), transparent 22rem),
+    radial-gradient(circle at 78% 18%, rgba(35, 151, 173, 0.15), transparent 26rem),
+    linear-gradient(180deg, #fbfdff 0%, var(--background) 48%, #ffffff 100%);
   color: var(--foreground);
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
 }
@@ -61,9 +62,42 @@ a {
 
 .darquis-grid {
   background-image:
-    linear-gradient(rgba(16, 24, 32, 0.045) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 24, 32, 0.045) 1px, transparent 1px);
-  background-size: 28px 28px;
+    linear-gradient(rgba(16, 24, 32, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 24, 32, 0.035) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.darquis-cloud {
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+  border-radius: 9999px;
+  filter: blur(34px);
+}
+
+.darquis-cloud-a {
+  left: -5rem;
+  top: 2rem;
+  height: 18rem;
+  width: 26rem;
+  background: rgba(35, 151, 173, 0.12);
+}
+
+.darquis-cloud-b {
+  right: -6rem;
+  top: 6rem;
+  height: 20rem;
+  width: 24rem;
+  background: rgba(120, 132, 255, 0.13);
+}
+
+.darquis-cloud-c {
+  bottom: 1rem;
+  left: 50%;
+  height: 16rem;
+  width: min(34rem, 90vw);
+  background: rgba(35, 151, 173, 0.12);
+  transform: translateX(-50%);
 }
 
 .darquis-focus {

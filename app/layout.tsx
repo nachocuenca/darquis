@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 const title = "Darquis · Documentación técnica sin pelearte con Word";
 const description =
-  "Software en desarrollo para arquitectos y arquitectos técnicos que elaboran certificados, informes y memorias técnicas mediante formularios guiados y documentos listos para firmar.";
+  "Herramienta en desarrollo para arquitectos, aparejadores e ingenieros que quieren elaborar certificados, informes y memorias técnicas recurrentes de forma más clara y ordenada.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://darquis.com"),
