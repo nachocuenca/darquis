@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f7fafb;
+  --foreground: #101820;
+  --darquis-blue: #2397ad;
+  --darquis-blue-dark: #126d80;
+  --darquis-blue-soft: #e8f6f8;
+  --darquis-border: #dbe6ea;
+  --darquis-muted: #5f6f78;
+  --darquis-ink: #101820;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-darquis-blue: var(--darquis-blue);
+  --color-darquis-blue-dark: var(--darquis-blue-dark);
+  --color-darquis-blue-soft: var(--darquis-blue-soft);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+section[id] {
+  scroll-margin-top: 88px;
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: clip;
+  background:
+    radial-gradient(circle at top left, rgba(35, 151, 173, 0.12), transparent 34rem),
+    linear-gradient(180deg, #fbfdfe 0%, var(--background) 52%, #ffffff 100%);
+  color: var(--foreground);
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+::selection {
+  background: rgba(35, 151, 173, 0.18);
+  color: var(--darquis-ink);
+}
+
+.darquis-grid {
+  background-image:
+    linear-gradient(rgba(16, 24, 32, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(16, 24, 32, 0.045) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
+
+.darquis-focus {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.darquis-focus:focus-visible {
+  outline-color: var(--darquis-blue);
+  box-shadow: 0 0 0 4px rgba(35, 151, 173, 0.18);
+}
