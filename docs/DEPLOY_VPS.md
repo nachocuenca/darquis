@@ -25,9 +25,9 @@ Nota importante: no tocar ni modificar la configuración de `portal.gestioneslab
 ## Estado Funcional
 
 - La landing está preparada para producción con `output: "standalone"`.
-- `/api/waitlist` valida email, perfil y aceptación de privacidad.
-- La persistencia real de la lista de espera sigue pendiente.
-- No hay base de datos ni servicios externos conectados.
+- `/api/waitlist` valida email, perfil, aceptación de privacidad, honeypot, tiempo mínimo, Turnstile y rate limit.
+- La persistencia real de la lista de espera se hace por Google Apps Script hacia Google Sheets.
+- No hay base de datos SQL, Supabase ni backend administrativo propio.
 
 ## Preparar Código en el VPS
 
@@ -51,6 +51,19 @@ git pull origin main
 En esta primera versión se puede levantar desde el repo. Para una separación más estricta, copiar o sincronizar el contenido validado a `/srv/apps/darquis`.
 
 ## Docker Compose
+
+Crear o actualizar un `.env` en `/home/debian/repos/darquis` antes de construir:
+
+```bash
+cat > .env <<'EOF'
+GOOGLE_SCRIPT_WEBHOOK_URL=https://script.google.com/macros/s/.../exec
+GOOGLE_SCRIPT_SECRET=valor_largo_aleatorio
+TURNSTILE_SECRET_KEY=0x...
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=0x...
+EOF
+```
+
+No subir este archivo al repositorio. `docker-compose.yml` pasa estas variables al contenedor en runtime.
 
 Validar configuración:
 
@@ -101,12 +114,13 @@ curl -I http://127.0.0.1:13080/privacidad
 Probar validación de waitlist:
 
 ```bash
+STARTED_AT=$(($(date +%s%3N)-5000))
 curl -X POST http://127.0.0.1:13080/api/waitlist \
   -H "Content-Type: application/json" \
-  -d '{"email":"test@example.com","profile":"arquitecto","privacyAccepted":true,"source":"vps-check"}'
+  -d "{\"email\":\"test@example.com\",\"profile\":\"arquitecto\",\"privacyAccepted\":true,\"source\":\"vps-check\",\"startedAt\":$STARTED_AT,\"turnstileToken\":\"TOKEN_REAL_DE_TURNSTILE\",\"website\":\"\"}"
 ```
 
-La respuesta esperada debe incluir `success: true` y `persisted: false`.
+Con Turnstile activo en produccion, `turnstileToken` debe ser un token real generado desde el formulario. Para una prueba sin token, usar entorno de desarrollo o claves de prueba de Turnstile.
 
 ## Nginx
 
@@ -160,6 +174,6 @@ Antes de ejecutar Certbot, comprobar que no afecta a otros virtual hosts existen
 - `nginx -t` pasa correctamente.
 - `https://darquis.com` carga la landing.
 - `https://www.darquis.com` carga o redirige según se decida.
-- `/api/waitlist` valida datos y responde sin persistencia real.
+- `/api/waitlist` valida datos, exige Turnstile en producción y guarda en Google Sheets mediante Apps Script.
 - `/aviso-legal`, `/privacidad` y `/cookies` cargan correctamente.
 - No se ha tocado `portal.gestioneslaborales.es`.

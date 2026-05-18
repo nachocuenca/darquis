@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { FormEvent, useState } from "react";
+import Script from "next/script";
+import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { landing } from "@/content/landing";
 import { validateWaitlistInput, type WaitlistErrors } from "@/lib/validations";
 
@@ -12,6 +13,33 @@ type WaitlistFormProps = {
 
 type Status = "idle" | "loading" | "success" | "error";
 
+type WaitlistConfig = {
+  turnstileSiteKey?: string | null;
+  turnstileRequired?: boolean;
+  devBypass?: boolean;
+};
+
+type TurnstileRenderOptions = {
+  sitekey: string;
+  theme?: "light" | "dark" | "auto";
+  size?: "normal" | "compact" | "flexible";
+  callback?: (token: string) => void;
+  "expired-callback"?: () => void;
+  "error-callback"?: () => void;
+};
+
+type TurnstileApi = {
+  render: (container: HTMLElement | string, options: TurnstileRenderOptions) => string;
+  reset: (widgetId?: string) => void;
+  remove: (widgetId: string) => void;
+};
+
+declare global {
+  interface Window {
+    turnstile?: TurnstileApi;
+  }
+}
+
 export function WaitlistForm({
   ctaLabel = landing.waitlist.cta,
   source = "modal",
@@ -19,16 +47,89 @@ export function WaitlistForm({
   const [email, setEmail] = useState("");
   const [profile, setProfile] = useState("");
   const [privacyAccepted, setPrivacyAccepted] = useState(false);
+  const [website, setWebsite] = useState("");
+  const [startedAt, setStartedAt] = useState(() => Date.now());
+  const [turnstileToken, setTurnstileToken] = useState("");
+  const [turnstileResetSignal, setTurnstileResetSignal] = useState(0);
+  const [turnstileConfig, setTurnstileConfig] = useState<WaitlistConfig>({});
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
   const [fieldErrors, setFieldErrors] = useState<WaitlistErrors>({});
+
+  const resetTurnstile = useCallback(() => {
+    setTurnstileToken("");
+    setTurnstileResetSignal((value) => value + 1);
+  }, []);
+
+  const handleTurnstileToken = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const handleTurnstileError = useCallback((errorMessage: string) => {
+    setTurnstileToken("");
+    setStatus("error");
+    setMessage(errorMessage);
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    async function loadConfig() {
+      try {
+        const response = await fetch("/api/waitlist", {
+          method: "GET",
+          headers: { Accept: "application/json" },
+          cache: "no-store",
+        });
+
+        if (!response.ok) {
+          return;
+        }
+
+        const config = (await response.json()) as WaitlistConfig;
+        if (!isMounted) {
+          return;
+        }
+
+        setTurnstileConfig(config);
+
+        if (config.devBypass) {
+          console.warn(
+            "Darquis waitlist: NEXT_PUBLIC_TURNSTILE_SITE_KEY is not configured. Development mode continues without the Turnstile widget.",
+          );
+        }
+      } catch (error) {
+        console.warn("Darquis waitlist: unable to load Turnstile configuration.", error);
+      }
+    }
+
+    loadConfig();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setMessage("");
     setFieldErrors({});
 
-    const validation = validateWaitlistInput({ email, profile, privacyAccepted, source });
+    if (turnstileConfig.turnstileSiteKey && !turnstileToken) {
+      setStatus("error");
+      setMessage("Estamos preparando la verificación. Espera unos segundos e inténtalo de nuevo.");
+      return;
+    }
+
+    const validation = validateWaitlistInput({
+      email,
+      profile,
+      privacyAccepted,
+      source,
+      turnstileToken,
+      website,
+      startedAt,
+    });
 
     if (!validation.success) {
       setStatus("error");
@@ -54,6 +155,7 @@ export function WaitlistForm({
         setStatus("error");
         setFieldErrors(result.errors ?? {});
         setMessage(result.message ?? "No hemos podido registrar la solicitud.");
+        resetTurnstile();
         return;
       }
 
@@ -61,10 +163,14 @@ export function WaitlistForm({
       setEmail("");
       setProfile("");
       setPrivacyAccepted(false);
+      setWebsite("");
+      setStartedAt(Date.now());
+      resetTurnstile();
       setMessage(result.message ?? landing.waitlist.confirmationText);
     } catch {
       setStatus("error");
       setMessage("No hemos podido conectar con el servidor. Inténtalo de nuevo en unos minutos.");
+      resetTurnstile();
     }
   }
 
@@ -89,6 +195,7 @@ export function WaitlistForm({
   const profileErrorId = `${source}-profile-error`;
   const privacyErrorId = `${source}-privacy-error`;
   const formStatusId = `${source}-form-status`;
+  const turnstileSiteKey = turnstileConfig.turnstileSiteKey ?? "";
 
   return (
     <form
@@ -96,6 +203,14 @@ export function WaitlistForm({
       onSubmit={handleSubmit}
       noValidate
     >
+      <HoneypotField
+        source={source}
+        value={website}
+        onChange={setWebsite}
+      />
+      <input type="hidden" name="startedAt" value={startedAt} readOnly />
+      <input type="hidden" name="turnstileToken" value={turnstileToken} readOnly />
+
       <div className="grid gap-4">
         <div>
           <label
@@ -162,6 +277,15 @@ export function WaitlistForm({
           />
         </div>
 
+        {turnstileSiteKey ? (
+          <TurnstileWidget
+            siteKey={turnstileSiteKey}
+            resetSignal={turnstileResetSignal}
+            onTokenChange={handleTurnstileToken}
+            onError={handleTurnstileError}
+          />
+        ) : null}
+
         <button
           className="darquis-focus mt-1 flex h-13 w-full items-center justify-center rounded-lg bg-[var(--darquis-blue)] px-5 text-[1.05rem] font-semibold text-white shadow-none transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--darquis-blue-dark)] disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-70"
           type="submit"
@@ -177,6 +301,103 @@ export function WaitlistForm({
         ) : null}
       </div>
     </form>
+  );
+}
+
+function HoneypotField({
+  source,
+  value,
+  onChange,
+}: {
+  source: string;
+  value: string;
+  onChange: (value: string) => void;
+}) {
+  return (
+    <div
+      className="absolute left-[-10000px] top-auto h-px w-px overflow-hidden"
+      aria-hidden="true"
+    >
+      <label htmlFor={`${source}-website`}>Website</label>
+      <input
+        id={`${source}-website`}
+        name="website"
+        type="text"
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        tabIndex={-1}
+        autoComplete="off"
+      />
+    </div>
+  );
+}
+
+function TurnstileWidget({
+  siteKey,
+  resetSignal,
+  onTokenChange,
+  onError,
+}: {
+  siteKey: string;
+  resetSignal: number;
+  onTokenChange: (token: string) => void;
+  onError: (message: string) => void;
+}) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const widgetIdRef = useRef<string | null>(null);
+  const [scriptReady, setScriptReady] = useState(false);
+
+  const handleScriptReady = useCallback(() => {
+    setScriptReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!siteKey || !scriptReady || !containerRef.current || !window.turnstile || widgetIdRef.current) {
+      return;
+    }
+
+    const widgetId = window.turnstile.render(containerRef.current, {
+      sitekey: siteKey,
+      theme: "light",
+      size: "flexible",
+      callback: onTokenChange,
+      "expired-callback": () => onTokenChange(""),
+      "error-callback": () => {
+        onTokenChange("");
+        onError("No hemos podido cargar la verificación. Inténtalo de nuevo.");
+      },
+    });
+
+    widgetIdRef.current = widgetId;
+
+    return () => {
+      if (widgetIdRef.current && window.turnstile) {
+        window.turnstile.remove(widgetIdRef.current);
+      }
+
+      widgetIdRef.current = null;
+    };
+  }, [onError, onTokenChange, scriptReady, siteKey]);
+
+  useEffect(() => {
+    if (resetSignal === 0 || !widgetIdRef.current || !window.turnstile) {
+      return;
+    }
+
+    window.turnstile.reset(widgetIdRef.current);
+    onTokenChange("");
+  }, [onTokenChange, resetSignal]);
+
+  return (
+    <div className="min-h-[65px] overflow-hidden rounded-lg border border-[rgba(16,24,32,0.08)] bg-[#fbfdfe]/92 px-2 py-2">
+      <Script
+        src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit"
+        strategy="afterInteractive"
+        onLoad={handleScriptReady}
+        onReady={handleScriptReady}
+      />
+      <div ref={containerRef} className="min-h-[52px] w-full" />
+    </div>
   );
 }
 

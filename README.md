@@ -13,6 +13,8 @@ La V1 no vende el producto ni muestra una demo falsa: comunica el posicionamient
 - Tailwind CSS
 - React
 - Endpoint interno `/api/waitlist`
+- Google Apps Script como webhook ligero hacia Google Sheets
+- Cloudflare Turnstile, honeypot y rate limit sencillo para proteger el formulario
 - Preparado para despliegue en VPS con Docker y Nginx
 
 ## Requisitos
@@ -47,9 +49,16 @@ npm run build
 
 ## Variables de Entorno
 
-La versión actual no requiere variables de entorno.
+Copiar `.env.example` a `.env.local` en desarrollo y configurar los valores reales en el VPS:
 
-Cuando se conecte la persistencia real de la lista de espera, habrá que añadir las variables del proveedor elegido, por ejemplo Supabase, Google Sheets, Airtable, Resend o backend propio.
+```bash
+GOOGLE_SCRIPT_WEBHOOK_URL=
+GOOGLE_SCRIPT_SECRET=
+TURNSTILE_SECRET_KEY=
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+```
+
+En desarrollo, si falta `TURNSTILE_SECRET_KEY`, el endpoint permite un bypass controlado con warning en consola. En producción Turnstile es obligatorio.
 
 ## Estado del Waitlist
 
@@ -60,25 +69,27 @@ Actualmente la API:
 - Valida email obligatorio.
 - Valida perfil profesional si llega informado.
 - Valida aceptación obligatoria de privacidad.
-- Devuelve respuesta de éxito si los datos son válidos.
-- No persiste todavía los datos en ninguna base de datos ni servicio externo.
+- Filtra honeypot y envíos demasiado rápidos.
+- Valida Cloudflare Turnstile en servidor.
+- Aplica un rate limit sencillo en memoria.
+- Envía los datos a Google Apps Script para guardar en Google Sheets y notificar por email.
 
-El punto preparado para conectar persistencia está en:
+El punto de integración está en:
 
 ```txt
 lib/waitlist.ts
 ```
 
-Más detalle en [docs/WAITLIST.md](docs/WAITLIST.md).
+Más detalle en [docs/WAITLIST.md](docs/WAITLIST.md) y [docs/GOOGLE_SHEETS_WAITLIST.md](docs/GOOGLE_SHEETS_WAITLIST.md).
 
 ## Documentación
 
 - [Despliegue en VPS](docs/DEPLOY_VPS.md)
-- [Waitlist y persistencia futura](docs/WAITLIST.md)
+- [Waitlist](docs/WAITLIST.md)
+- [Google Sheets Waitlist](docs/GOOGLE_SHEETS_WAITLIST.md)
 
 ## Pendientes Antes de Producción
 
-- Conectar persistencia real para la lista de espera.
 - Revisar textos legales con asesoría o responsable legal.
 - Crear imagen Open Graph 1200x630 en `/public/og/darquis-og.png`.
 - Revisar vulnerabilidades moderadas cuando Next publique un parche compatible.
