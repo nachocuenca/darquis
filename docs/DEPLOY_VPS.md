@@ -1,6 +1,6 @@
 # Despliegue VPS
 
-Guia prevista para desplegar Darquis Landing V1 en un VPS propio con Docker y Nginx.
+Guia de despliegue de Darquis Landing V1 en el VPS propio con Docker y Nginx.
 
 No ejecutar estos pasos desde el entorno local salvo que se este trabajando directamente en el servidor.
 
@@ -8,11 +8,31 @@ No ejecutar estos pasos desde el entorno local salvo que se este trabajando dire
 
 Servir la landing de Darquis en produccion detras de Nginx, usando el build standalone de Next.js dentro de Docker.
 
+## Layout de directorios en el VPS
+
+```
+/home/debian/repos/darquis          # Repo fuente. Aqui se hace git pull. NO es el runtime activo.
+/srv/apps/darquis/
+  shared/
+    .env                            # Variables y secretos reales de produccion. Nunca en el repo.
+  releases/
+    <timestamp>/                    # Releases desplegadas (p.ej. 20260522_143000).
+  current -> releases/<timestamp>   # Symlink a la release activa. Este es el runtime.
+/var/www/darquis-errors/
+  403.html                          # Pagina 403 personalizada servida por Nginx.
+```
+
+**Regla fundamental:**
+- `/home/debian/repos/darquis` es solo el repo fuente. Se usa para hacer `git pull`.
+- `/srv/apps/darquis/current` es el runtime activo desde donde Docker Compose levanta el contenedor.
+- **No levantar Darquis desde `/home/debian/repos/darquis` salvo rollback de emergencia** (ver seccion Rollback).
+- El `.env` real de produccion vive en `/srv/apps/darquis/shared/.env`. No subir `.env` ni `.env.local` al repo.
+
 ## Datos del despliegue
 
 - Repositorio remoto: `https://github.com/nachocuenca/darquis.git`
-- Ruta del repo en VPS: `/home/debian/repos/darquis`
-- Ruta runtime prevista: `/srv/apps/darquis`
+- Repo fuente en VPS: `/home/debian/repos/darquis`
+- Runtime activo: `/srv/apps/darquis/current`
 - Puerto local del host: `13080`
 - Puerto interno del contenedor: `3000`
 - Dominios:
@@ -30,35 +50,26 @@ Nota importante: no tocar ni modificar la configuracion de `portal.gestioneslabo
 - La notificacion interna por email se envia desde Next.js usando SMTP IONOS.
 - No hay base de datos SQL, Supabase ni backend administrativo propio.
 
-## Preparar codigo en el VPS
-
-Primera instalacion:
+## Primera instalacion (solo una vez)
 
 ```bash
+# Crear estructura de directorios
 sudo mkdir -p /home/debian/repos
 sudo chown -R debian:debian /home/debian/repos
+sudo mkdir -p /srv/apps/darquis/shared
+sudo mkdir -p /srv/apps/darquis/releases
+
+# Clonar repo fuente
 cd /home/debian/repos
 git clone https://github.com/nachocuenca/darquis.git
-cd /home/debian/repos/darquis
+
+# Crear el .env de produccion (rellenar con valores reales)
+sudo nano /srv/apps/darquis/shared/.env
 ```
-
-Actualizaciones posteriores:
-
-```bash
-cd /home/debian/repos/darquis
-git pull origin main
-```
-
-En esta primera version se puede levantar desde el repo. Para una separacion mas estricta, copiar o sincronizar el contenido validado a `/srv/apps/darquis`.
 
 ## Variables de entorno
 
-Crear o actualizar un `.env` en `/home/debian/repos/darquis` antes de construir. No subir este archivo al repositorio.
-
-```bash
-cd /home/debian/repos/darquis
-sudo nano .env
-```
+El `.env` real de produccion vive en `/srv/apps/darquis/shared/.env`. **No subir este archivo al repositorio.**
 
 Contenido orientativo:
 
@@ -81,60 +92,128 @@ Usar el servidor SMTP indicado por IONOS para la cuenta `info@darquis.com`. Norm
 
 `SMTP_PASSWORD` debe ser la contrasena o password de aplicacion de IONOS para esa cuenta. No poner secretos en `docker-compose.yml`.
 
-## Docker Compose
+## Flujo de deploy
 
-`docker-compose.yml` lee las variables desde `.env` y las pasa al contenedor en runtime.
-
-Validar configuracion:
+Este es el flujo completo y correcto para desplegar una nueva version:
 
 ```bash
+# 1. Actualizar repo fuente
 cd /home/debian/repos/darquis
-docker compose config
-```
+git pull origin main
 
-Construir y levantar:
+# 2. Crear directorio de release con timestamp
+TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+RELEASE_DIR=/srv/apps/darquis/releases/$TIMESTAMP
+sudo mkdir -p "$RELEASE_DIR"
 
-```bash
+# 3. Sincronizar fuente a la release (excluir artefactos y secretos)
+sudo rsync -a --delete \
+  --exclude='.git' \
+  --exclude='.next' \
+  --exclude='node_modules' \
+  --exclude='.env' \
+  --exclude='.env.local' \
+  --exclude='.env*.local' \
+  /home/debian/repos/darquis/ "$RELEASE_DIR/"
+
+# 4. Enlazar el .env compartido de produccion a la release
+sudo ln -sf /srv/apps/darquis/shared/.env "$RELEASE_DIR/.env"
+
+# 5. Actualizar el symlink current a la nueva release
+sudo ln -sfn "$RELEASE_DIR" /srv/apps/darquis/current
+
+# 6. Levantar Docker Compose desde current
+cd /srv/apps/darquis/current
 sudo docker compose up -d --build
+
+# 7. Actualizar la pagina de error 403
+sudo mkdir -p /var/www/darquis-errors
+sudo cp /srv/apps/darquis/current/ops/nginx/darquis-403.html /var/www/darquis-errors/403.html
+sudo chown www-data:www-data /var/www/darquis-errors/403.html
+sudo chmod 644 /var/www/darquis-errors/403.html
+
+# 8. Validar Nginx y recargar
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
-Ver logs tras levantar:
+Tras el deploy, ejecutar los healthchecks de la seccion correspondiente.
+
+## Docker Compose — operaciones habituales
+
+`docker-compose.yml` lee las variables desde `.env` (enlazado desde `shared/.env`) y las pasa al contenedor en runtime. Todos los comandos se ejecutan desde `/srv/apps/darquis/current`.
 
 ```bash
+cd /srv/apps/darquis/current
+
+# Validar configuracion
+sudo docker compose config
+
+# Ver logs tras levantar
 sudo docker compose logs --tail=120 darquis
-```
 
-Ver logs en seguimiento:
-
-```bash
+# Ver logs en seguimiento
 sudo docker compose logs -f darquis
-```
 
-Ver contenedores:
-
-```bash
+# Ver contenedores
 sudo docker compose ps
-```
 
-Reiniciar:
-
-```bash
+# Reiniciar
 sudo docker compose restart darquis
-```
 
-Parar:
-
-```bash
+# Parar
 sudo docker compose down
 ```
 
-## Verificacion local en el VPS
+## Rollback rapido
 
-Comprobar respuesta directa del contenedor a traves del puerto publicado en localhost:
+### Opcion 1 — Volver a una release anterior (preferido)
 
 ```bash
+# Listar releases disponibles
+ls -lt /srv/apps/darquis/releases/
+
+# Apuntar current a la release anterior (sustituir <timestamp_anterior>)
+sudo ln -sfn /srv/apps/darquis/releases/<timestamp_anterior> /srv/apps/darquis/current
+
+# Levantar desde la release restaurada
+cd /srv/apps/darquis/current
+sudo docker compose up -d --build
+```
+
+### Opcion 2 — Emergencia: levantar desde repo fuente
+
+Solo si `current` falla y no hay releases validas disponibles:
+
+```bash
+cd /home/debian/repos/darquis
+
+# Enlazar el .env compartido al repo fuente (necesario para que el contenedor arranque)
+sudo ln -sf /srv/apps/darquis/shared/.env .env
+
+sudo docker compose up -d --build
+```
+
+Restaurar el flujo normalizado tan pronto como sea posible creando una nueva release.
+
+## Healthcheck
+
+Verificar el estado completo del despliegue:
+
+```bash
+# Confirmar release activa
+readlink -f /srv/apps/darquis/current
+
+# Ver contenedores en ejecucion
+sudo docker ps
+
+# Comprobar respuesta directa del contenedor
 curl -I http://127.0.0.1:13080
-curl -I http://127.0.0.1:13080/privacidad
+
+# Comprobar respuesta publica
+curl -I https://darquis.com
+curl -I https://darquis.com/privacidad
+curl -I https://darquis.com/aviso-legal
+curl -I https://darquis.com/cookies
 ```
 
 Probar validacion de waitlist:
@@ -150,7 +229,7 @@ Con Turnstile activo en produccion, `turnstileToken` debe ser un token real gene
 
 ## Nginx
 
-Crear un server block para `darquis.com` y `www.darquis.com` apuntando al puerto local `13080`.
+El vhost de Nginx proxya `darquis.com` y `www.darquis.com` hacia el puerto local `13080` donde escucha el contenedor Docker.
 
 Ejemplo orientativo:
 
@@ -160,6 +239,14 @@ server {
     listen [::]:80;
 
     server_name darquis.com www.darquis.com;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name darquis.com www.darquis.com;
+
+    # ... certificados SSL ...
 
     location / {
         proxy_pass http://127.0.0.1:13080;
@@ -173,6 +260,8 @@ server {
     }
 }
 ```
+
+Ver `docs/RESTRICTED_ACCESS.md` para la configuracion de la pagina 403 personalizada y el control de acceso por IP.
 
 Validar Nginx:
 
@@ -195,9 +284,14 @@ Antes de ejecutar Certbot, comprobar que no afecta a otros virtual hosts existen
 
 ## Checklist post-deploy
 
-- `docker compose ps` muestra `darquis-web` en ejecucion.
-- `curl -I http://127.0.0.1:13080` devuelve respuesta HTTP.
-- `nginx -t` pasa correctamente.
+- `readlink -f /srv/apps/darquis/current` apunta a la release correcta.
+- `sudo docker ps` muestra `darquis-web` en ejecucion.
+- `curl -I http://127.0.0.1:13080` devuelve `200`.
+- `curl -I https://darquis.com` devuelve `200`.
+- `curl -I https://darquis.com/privacidad` devuelve `200`.
+- `curl -I https://darquis.com/aviso-legal` devuelve `200`.
+- `curl -I https://darquis.com/cookies` devuelve `200`.
+- `sudo nginx -t` pasa correctamente.
 - `https://darquis.com` carga la landing.
 - `https://www.darquis.com` carga o redirige segun se decida.
 - `/api/waitlist` valida datos, exige Turnstile en produccion, guarda en Google Sheets y envia notificacion SMTP IONOS.

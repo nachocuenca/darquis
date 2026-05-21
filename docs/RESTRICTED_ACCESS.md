@@ -31,21 +31,20 @@ aunque el acceso al resto del site esté bloqueado.
 
 ### 1. Copiar el fichero al servidor
 
+El fichero `ops/nginx/darquis-403.html` se copia a `/var/www/darquis-errors/403.html` como parte del flujo de deploy normalizado (paso 7 de `docs/DEPLOY_VPS.md`). El origen es siempre `/srv/apps/darquis/current`, que apunta a la release activa.
+
 ```bash
-# Desde tu máquina local, tras hacer pull del repo en el VPS:
-cd /home/debian/repos/darquis
-git pull origin main
-
-# Crear el directorio de errores si no existe
+# El deploy lo hace automaticamente desde la release activa:
 sudo mkdir -p /var/www/darquis-errors
-
-# Copiar la página
-sudo cp ops/nginx/darquis-403.html /var/www/darquis-errors/403.html
+sudo cp /srv/apps/darquis/current/ops/nginx/darquis-403.html /var/www/darquis-errors/403.html
 
 # Asegurar permisos de lectura para Nginx (usuario www-data en Debian/Ubuntu)
 sudo chown www-data:www-data /var/www/darquis-errors/403.html
 sudo chmod 644 /var/www/darquis-errors/403.html
 ```
+
+> **Nota:** no copiar desde `/home/debian/repos/darquis` directamente. El runtime activo
+> es siempre `/srv/apps/darquis/current`. Ver `docs/DEPLOY_VPS.md` para el flujo completo.
 
 ### 2. Snippet de Nginx
 
