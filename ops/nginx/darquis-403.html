@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Darquis · Acceso no disponible</title>
+    <style>
+      /* ── Reset ─────────────────────────────────────────────── */
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      /* ── Tokens ─────────────────────────────────────────────── */
+      :root {
+        --bg:           #f7fbff;
+        --ink:          #101820;
+        --blue:         #1fa6ba;
+        --blue-dark:    #0b7588;
+        --blue-soft:    #e7f8fb;
+        --border:       #d9e7ed;
+        --muted:        #5f6f78;
+        --card-bg:      rgba(255, 255, 255, 0.88);
+        --grid-line:    rgba(31, 166, 186, 0.06);
+        --grid-size:    72px;
+        --radius:       14px;
+        --shadow:       0 2px 24px rgba(11, 117, 136, 0.10),
+                        0 0 0 1px rgba(11, 117, 136, 0.07);
+      }
+
+      /* ── Root ───────────────────────────────────────────────── */
+      html {
+        height: 100%;
+        font-size: 16px;
+      }
+
+      body {
+        min-height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem 1.25rem;
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+                     "Segoe UI", Roboto, Arial, sans-serif;
+        color: var(--ink);
+        background-color: var(--bg);
+
+        /* Blueprint grid */
+        background-image:
+          linear-gradient(var(--grid-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+          radial-gradient(circle at 15% 12%, rgba(104, 132, 255, 0.13), transparent 22rem),
+          radial-gradient(circle at 82% 20%, rgba(31, 166, 186, 0.14), transparent 26rem),
+          linear-gradient(180deg, #fbfdff 0%, var(--bg) 50%, #ffffff 100%);
+        background-size:
+          var(--grid-size) var(--grid-size),
+          var(--grid-size) var(--grid-size),
+          100% 100%,
+          100% 100%,
+          100% 100%;
+      }
+
+      /* ── Decorative arcs (SVG layer) ────────────────────────── */
+      .arcs {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        overflow: hidden;
+        z-index: 0;
+      }
+
+      /* ── Card ───────────────────────────────────────────────── */
+      .card {
+        position: relative;
+        z-index: 1;
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        padding: 3rem 2.5rem 2.5rem;
+        max-width: 480px;
+        width: 100%;
+        text-align: center;
+      }
+
+      /* ── Wordmark ───────────────────────────────────────────── */
+      .wordmark {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.55rem;
+        margin-bottom: 2.25rem;
+      }
+
+      /* Blueprint icon — simplified compass / document mark */
+      .wordmark-icon {
+        flex-shrink: 0;
+        width: 28px;
+        height: 28px;
+      }
+
+      .wordmark-text {
+        font-size: 1.15rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--ink);
+        line-height: 1;
+      }
+
+      /* ── Divider ─────────────────────────────────────────────── */
+      .divider {
+        display: block;
+        width: 40px;
+        height: 2px;
+        background: linear-gradient(90deg, var(--blue), var(--blue-soft));
+        border-radius: 2px;
+        margin: 0 auto 1.75rem;
+      }
+
+      /* ── Heading ─────────────────────────────────────────────── */
+      h1 {
+        font-size: 1.45rem;
+        font-weight: 700;
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+        color: var(--ink);
+        margin-bottom: 1rem;
+      }
+
+      /* ── Body text ───────────────────────────────────────────── */
+      .body-text {
+        font-size: 0.9375rem;
+        line-height: 1.65;
+        color: var(--muted);
+        margin-bottom: 2rem;
+      }
+
+      /* ── Button ──────────────────────────────────────────────── */
+      .btn {
+        display: inline-block;
+        padding: 0.625rem 1.5rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        letter-spacing: 0.015em;
+        color: #ffffff;
+        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dark) 100%);
+        border: none;
+        border-radius: 8px;
+        text-decoration: none;
+        cursor: default;
+        box-shadow: 0 1px 8px rgba(11, 117, 136, 0.25);
+        transition: opacity 0.15s;
+        user-select: none;
+        pointer-events: none;
+      }
+
+      /* ── Micro ───────────────────────────────────────────────── */
+      .micro {
+        margin-top: 1.25rem;
+        font-size: 0.8125rem;
+        color: var(--muted);
+        opacity: 0.7;
+      }
+
+      /* ── Code badge ──────────────────────────────────────────── */
+      .code-badge {
+        margin-top: 2rem;
+        font-size: 0.6875rem;
+        font-family: ui-monospace, "Cascadia Code", "Fira Code", monospace;
+        letter-spacing: 0.06em;
+        color: var(--blue-dark);
+        opacity: 0.45;
+      }
+
+      /* ── Responsive ──────────────────────────────────────────── */
+      @media (max-width: 420px) {
+        .card {
+          padding: 2.25rem 1.5rem 2rem;
+        }
+        h1 {
+          font-size: 1.25rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+
+    <!-- Decorative SVG arcs -->
+    <svg class="arcs" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice"
+         xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Large quarter-circle top-left -->
+      <circle cx="-60" cy="-40" r="380"
+              fill="none" stroke="rgba(31,166,186,0.08)" stroke-width="1"/>
+      <circle cx="-60" cy="-40" r="520"
+              fill="none" stroke="rgba(31,166,186,0.05)" stroke-width="1"/>
+      <!-- Arc bottom-right -->
+      <circle cx="1260" cy="740" r="440"
+              fill="none" stroke="rgba(31,166,186,0.07)" stroke-width="1"/>
+      <circle cx="1260" cy="740" r="580"
+              fill="none" stroke="rgba(31,166,186,0.04)" stroke-width="1"/>
+      <!-- Cross-hair marks (blueprint feel) -->
+      <line x1="180" y1="0" x2="180" y2="700"
+            stroke="rgba(31,166,186,0.05)" stroke-width="1"/>
+      <line x1="0" y1="210" x2="1200" y2="210"
+            stroke="rgba(31,166,186,0.04)" stroke-width="1"/>
+    </svg>
+
+    <!-- Main card -->
+    <main class="card" role="main">
+
+      <!-- Wordmark -->
+      <div class="wordmark" aria-label="Darquis">
+        <!-- Inline SVG icon: blueprint compass/document mark -->
+        <svg class="wordmark-icon" viewBox="0 0 28 28" fill="none"
+             xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <!-- Outer circle -->
+          <circle cx="14" cy="14" r="12.5"
+                  stroke="#1fa6ba" stroke-width="1.25"/>
+          <!-- Inner ring -->
+          <circle cx="14" cy="14" r="7.5"
+                  stroke="#1fa6ba" stroke-width="0.8" stroke-dasharray="2.5 2"/>
+          <!-- Cross hairs -->
+          <line x1="14" y1="3" x2="14" y2="7"
+                stroke="#1fa6ba" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="14" y1="21" x2="14" y2="25"
+                stroke="#1fa6ba" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="3" y1="14" x2="7" y2="14"
+                stroke="#1fa6ba" stroke-width="1.2" stroke-linecap="round"/>
+          <line x1="21" y1="14" x2="25" y2="14"
+                stroke="#1fa6ba" stroke-width="1.2" stroke-linecap="round"/>
+          <!-- Center dot -->
+          <circle cx="14" cy="14" r="2"
+                  fill="#1fa6ba"/>
+        </svg>
+        <span class="wordmark-text">Darquis</span>
+      </div>
+
+      <!-- Accent divider -->
+      <span class="divider" aria-hidden="true"></span>
+
+      <!-- Heading -->
+      <h1>Acceso no disponible</h1>
+
+      <!-- Body -->
+      <p class="body-text">
+        Darquis está en fase privada de revisión.<br />
+        Si necesitas acceder, contacta con el equipo.
+      </p>
+
+      <!-- CTA — non-interactive (decorative) -->
+      <span class="btn" aria-hidden="true">Volver más tarde</span>
+
+      <!-- Micro-copy -->
+      <p class="micro">Gracias por tu comprensión.</p>
+
+      <!-- Discrete code reference -->
+      <p class="code-badge" aria-label="Código de estado HTTP 403">HTTP 403</p>
+
+    </main>
+
+  </body>
+</html>
