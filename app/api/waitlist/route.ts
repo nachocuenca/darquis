@@ -1,3 +1,4 @@
+import { sendWaitlistNotification } from "@/lib/notify";
 import { validateWaitlistInput } from "@/lib/validations";
 import {
   checkWaitlistRateLimit,
@@ -8,6 +9,8 @@ import {
   verifyTurnstileToken,
   WaitlistIntegrationError,
 } from "@/lib/waitlist";
+
+export const runtime = "nodejs";
 
 const successMessage =
   "Gracias por apuntarte. Te avisaremos en cuanto el acceso esté disponible para los primeros usuarios de Darquis.";
@@ -57,6 +60,7 @@ export async function POST(request: Request) {
     return Response.json({
       success: true,
       persisted: false,
+      notificationSent: false,
       message: successMessage,
     });
   }
@@ -106,16 +110,35 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await registerWaitlistLead(lead, {
+    const metadata = {
       createdAt: new Date().toISOString(),
       ip,
       userAgent,
       turnstileStatus: turnstile.status,
-    });
+    };
+    const result = await registerWaitlistLead(lead, metadata);
+    let notificationSent = false;
+
+    if (result.persisted) {
+      try {
+        await sendWaitlistNotification(lead, {
+          createdAt: metadata.createdAt,
+          turnstileStatus: metadata.turnstileStatus,
+        });
+        notificationSent = true;
+      } catch (error) {
+        console.warn("Waitlist SMTP notification failed", {
+          persisted: result.persisted,
+          notificationSent: false,
+          error: getErrorMessage(error),
+        });
+      }
+    }
 
     return Response.json({
       success: true,
       persisted: result.persisted,
+      notificationSent,
       message: successMessage,
     });
   } catch (error) {
@@ -137,4 +160,8 @@ export async function POST(request: Request) {
       },
     );
   }
+}
+
+function getErrorMessage(error: unknown) {
+  return error instanceof Error ? error.message : "Unknown error";
 }

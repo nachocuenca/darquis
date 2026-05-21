@@ -1,6 +1,6 @@
 # Google Sheets Waitlist
 
-Esta guía conecta el formulario de Darquis con Google Sheets mediante Google Apps Script.
+Esta guia conecta el formulario de Darquis con Google Sheets mediante Google Apps Script.
 
 Flujo:
 
@@ -10,13 +10,16 @@ Formulario Darquis
 -> validaciones servidor + honeypot + tiempo minimo + Turnstile
 -> Google Apps Script Web App
 -> Google Sheet
--> email a Javi
+-> SMTP IONOS desde Next.js
+-> email a info@darquis.com
 ```
+
+Google Apps Script queda como receptor para guardar filas en Google Sheets. La notificacion principal por email sale desde Next.js usando SMTP.
 
 ## 1. Crear el Google Sheet
 
 1. Crea una hoja nueva en Google Drive, por ejemplo `Darquis - Waitlist`.
-2. Renombra la primera pestaña como `Waitlist`.
+2. Renombra la primera pestana como `Waitlist`.
 3. Crea esta cabecera en la fila 1:
 
 ```txt
@@ -30,12 +33,12 @@ El endpoint de Next envia el campo `ip` como hash SHA-256 salado, no como IP en 
 Desde el Sheet:
 
 1. Abre `Extensiones` -> `Apps Script`.
-2. Pega este código en `Code.gs`.
+2. Pega este codigo en `Code.gs`.
 3. Guarda el proyecto.
 
 ```js
 const SHEET_NAME = "Waitlist";
-const NOTIFY_EMAIL = "info@darquis.com";
+const NOTIFY_EMAIL = "";
 
 function doPost(e) {
   try {
@@ -64,11 +67,15 @@ function doPost(e) {
       payload.notes || "",
     ]);
 
-    MailApp.sendEmail({
-      to: NOTIFY_EMAIL,
-      subject: "Nueva solicitud en Darquis",
-      body: buildEmailBody_(payload, spreadsheet.getUrl()),
-    });
+    // El aviso principal sale desde Next.js por SMTP IONOS.
+    // Deja NOTIFY_EMAIL vacio para evitar duplicados.
+    if (NOTIFY_EMAIL) {
+      MailApp.sendEmail({
+        to: NOTIFY_EMAIL,
+        subject: "Nueva solicitud en Darquis",
+        body: buildEmailBody_(payload, spreadsheet.getUrl()),
+      });
+    }
 
     return json_({ success: true });
   } catch (error) {
@@ -137,6 +144,7 @@ function buildEmailBody_(payload, sheetUrl) {
     "Fecha: " + (payload.createdAt || new Date().toISOString()),
     "Privacidad aceptada: " + (payload.privacyAccepted === true ? "si" : "no"),
     "Origen: " + (payload.source || "darquis.com"),
+    "Estado antirobots: " + (payload.turnstileStatus || ""),
     "",
     "Ver Google Sheet: " + sheetUrl,
   ].join("\n");
@@ -154,7 +162,7 @@ function json_(data) {
 En Apps Script:
 
 1. Abre `Configuracion del proyecto`.
-2. En `Propiedades de la secuencia de comandos`, añade:
+2. En `Propiedades de la secuencia de comandos`, anade:
 
 ```txt
 GOOGLE_SCRIPT_SECRET=un_valor_largo_aleatorio
@@ -168,7 +176,7 @@ Ese mismo valor debe ir en la variable de entorno `GOOGLE_SCRIPT_SECRET` de Next
 2. Tipo: `Aplicacion web`.
 3. Ejecutar como: `Yo`.
 4. Quien tiene acceso: `Cualquier usuario`.
-5. Autoriza permisos de Sheets y Mail cuando Google lo pida.
+5. Autoriza permisos de Sheets cuando Google lo pida. Mail solo sera necesario si mantienes el bloque opcional de `MailApp`.
 6. Copia la URL `/exec` generada.
 
 Esa URL es el valor de:
@@ -177,7 +185,7 @@ Esa URL es el valor de:
 GOOGLE_SCRIPT_WEBHOOK_URL=https://script.google.com/macros/s/.../exec
 ```
 
-Aunque la Web App sea accesible publicamente, el código valida `GOOGLE_SCRIPT_SECRET` y rechaza cualquier payload que no lo incluya.
+Aunque la Web App sea accesible publicamente, el codigo valida `GOOGLE_SCRIPT_SECRET` y rechaza cualquier payload que no lo incluya.
 
 ## 5. Payload que recibe Apps Script
 
@@ -198,35 +206,41 @@ Next.js envia JSON con estos campos:
 }
 ```
 
-## 6. Email a Javi
+## 6. Notificaciones por email
 
-El correo se envia a:
+Antes, Apps Script podia mandar emails internos con `MailApp.sendEmail`. Ahora el aviso principal se envia desde Next.js usando SMTP IONOS y las variables `SMTP_*`.
+
+Si se mantiene `MailApp` activo en Apps Script, puede haber duplicados: uno desde Google y otro desde SMTP IONOS.
+
+Recomendacion:
+
+- Mantener `appendRow`.
+- Desactivar o comentar `MailApp.sendEmail` en Apps Script.
+- O dejar `NOTIFY_EMAIL` vacio para que el bloque opcional no se ejecute.
+
+Ejemplo de envio Apps Script desactivado:
 
 ```js
-const NOTIFY_EMAIL = "info@darquis.com";
+const NOTIFY_EMAIL = "";
+
+if (NOTIFY_EMAIL) {
+  MailApp.sendEmail({
+    to: NOTIFY_EMAIL,
+    subject: "Nueva solicitud en Darquis",
+    body: buildEmailBody_(payload, spreadsheet.getUrl()),
+  });
+}
 ```
 
-Si el email real de Javi es otro, cambia solo esa constante.
-
-Asunto:
+El email principal debe salir desde:
 
 ```txt
-Nueva solicitud en Darquis
+SMTP_USER=info@darquis.com
+WAITLIST_NOTIFY_FROM=Darquis <info@darquis.com>
+WAITLIST_NOTIFY_TO=info@darquis.com
 ```
 
-Cuerpo:
-
-```txt
-Nueva solicitud en la lista de espera de Darquis.
-
-Email: ...
-Perfil: ...
-Fecha: ...
-Privacidad aceptada: si
-Origen: darquis.com
-
-Ver Google Sheet: [URL]
-```
+El `reply-to` lo pone Next.js con el email del lead.
 
 ## 7. Variables de entorno en Darquis
 
@@ -235,7 +249,17 @@ GOOGLE_SCRIPT_WEBHOOK_URL=
 GOOGLE_SCRIPT_SECRET=
 TURNSTILE_SECRET_KEY=
 NEXT_PUBLIC_TURNSTILE_SITE_KEY=
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=info@darquis.com
+SMTP_PASSWORD=
+WAITLIST_NOTIFY_TO=info@darquis.com
+WAITLIST_NOTIFY_FROM="Darquis <info@darquis.com>"
+WAITLIST_SHEET_URL=
 ```
+
+Usar el servidor SMTP indicado por IONOS para la cuenta `info@darquis.com`. Normalmente sera `smtp.ionos.es` o el valor que figure en la configuracion de Outlook/IONOS.
 
 En desarrollo, si falta `TURNSTILE_SECRET_KEY`, `/api/waitlist` permite un bypass controlado y escribe un warning en consola. En produccion, falta de `TURNSTILE_SECRET_KEY` bloquea el envio.
 
@@ -246,7 +270,7 @@ Si faltan `GOOGLE_SCRIPT_WEBHOOK_URL` o `GOOGLE_SCRIPT_SECRET` en desarrollo, el
 1. Entra en Cloudflare Dashboard.
 2. Ve a `Turnstile` -> `Add widget`.
 3. Nombre orientativo: `Darquis waitlist`.
-4. Tipo recomendado: `Managed`. Es poco intrusivo y evita los CAPTCHAs de imagen.
+4. Tipo recomendado: `Managed`.
 5. Hostnames:
 
 ```txt
