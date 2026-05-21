@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>Acceso no disponible</title>
+    <title>Darquis · Acceso no disponible</title>
     <style>
       /* ── Reset ──────────────────────────────────────────────── */
       *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -96,11 +96,16 @@
         padding: 2.75rem 2.75rem 2.5rem;
       }
 
-      /* ── Blueprint node (purely decorative, not a logo) ─────── */
-      .node {
-        display: flex;
-        justify-content: center;
-        margin-bottom: 2rem;
+      /* ── Wordmark ─────────────────────────────────────────────── */
+      .wordmark {
+        display: block;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--blue-dk);
+        opacity: 0.72;
+        margin-bottom: 2.25rem;
       }
 
       /* ── Accent rule ─────────────────────────────────────────── */
@@ -128,43 +133,15 @@
         font-size: 0.9375rem;
         line-height: 1.7;
         color: var(--muted);
-        margin-bottom: 2.125rem;
-      }
-
-      /* ── Button ──────────────────────────────────────────────── */
-      .btn {
-        display: inline-block;
-        padding: 0.625rem 1.625rem;
-        font-size: 0.875rem;
-        font-weight: 600;
-        letter-spacing: 0.01em;
-        color: #ffffff;
-        background: linear-gradient(135deg, var(--blue) 0%, var(--blue-dk) 100%);
-        border-radius: 9px;
-        text-decoration: none;
-        user-select: none;
-        pointer-events: none;
-        box-shadow:
-          0 1px 3px  rgba(11, 117, 136, 0.18),
-          0 4px 12px rgba(11, 117, 136, 0.20);
+        margin-bottom: 0;
       }
 
       /* ── Micro ───────────────────────────────────────────────── */
       .micro {
-        margin-top: 1.125rem;
+        margin-top: 1.5rem;
         font-size: 0.8125rem;
         color: var(--muted);
-        opacity: 0.58;
-      }
-
-      /* ── 403 badge ───────────────────────────────────────────── */
-      .badge {
-        margin-top: 2.25rem;
-        font-family: ui-monospace, "Cascadia Code", "SF Mono", monospace;
-        font-size: 0.6875rem;
-        letter-spacing: 0.09em;
-        color: var(--blue-dk);
-        opacity: 0.30;
+        opacity: 0.55;
       }
 
       /* ── Responsive ──────────────────────────────────────────── */
@@ -210,28 +187,8 @@
     <main class="card" role="main">
       <div class="card-inner">
 
-        <!-- Abstract blueprint node — decorative, not a brand mark -->
-        <div class="node" aria-hidden="true">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none"
-               xmlns="http://www.w3.org/2000/svg">
-            <!-- Horizontal arm -->
-            <line x1="0"  y1="18" x2="13" y2="18"
-                  stroke="#1fa6ba" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
-            <line x1="23" y1="18" x2="36" y2="18"
-                  stroke="#1fa6ba" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
-            <!-- Vertical arm -->
-            <line x1="18" y1="0"  x2="18" y2="13"
-                  stroke="#1fa6ba" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
-            <line x1="18" y1="23" x2="18" y2="36"
-                  stroke="#1fa6ba" stroke-width="1" stroke-linecap="round" opacity="0.5"/>
-            <!-- Center ring -->
-            <circle cx="18" cy="18" r="6"
-                    fill="none" stroke="#1fa6ba" stroke-width="1.25"/>
-            <!-- Center fill -->
-            <circle cx="18" cy="18" r="2.25"
-                    fill="#1fa6ba"/>
-          </svg>
-        </div>
+        <!-- Wordmark -->
+        <span class="wordmark">Darquis</span>
 
         <!-- Rule -->
         <span class="rule" aria-hidden="true"></span>
@@ -241,18 +198,12 @@
 
         <!-- Body -->
         <p class="body">
-          Este acceso no está disponible en este momento.<br />
-          Si necesitas entrar, contacta con el equipo.
+          Darquis está en fase privada de revisión.<br />
+          Si necesitas acceder, contacta con el equipo.
         </p>
-
-        <!-- CTA — decorative -->
-        <span class="btn" aria-hidden="true">Volver más tarde</span>
 
         <!-- Micro -->
         <p class="micro">Gracias por tu comprensión.</p>
-
-        <!-- HTTP status — very discrete -->
-        <p class="badge" aria-label="Código de estado 403">403</p>
 
       </div>
     </main>
