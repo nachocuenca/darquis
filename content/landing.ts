@@ -100,7 +100,7 @@ export const landing = {
     text:
       "Estamos preparando las primeras versiones. Si quieres probar Darquis antes que nadie y ayudarnos a diseñar un software realmente útil para técnicos, únete a la lista de espera.",
     cta: "Unirme a la lista de espera",
-    microcopy: "Sin compromiso · Sin spam",
+    microcopy: "Sin compromiso",
     confirmationTitle: "Solicitud recibida.",
     confirmationText:
       "Gracias por apuntarte. Te avisaremos en cuanto el acceso esté disponible para los primeros usuarios de Darquis.",

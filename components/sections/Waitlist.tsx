@@ -44,7 +44,7 @@ export function Waitlist() {
             {landing.waitlist.text}
           </p>
           <div className="mt-5 flex flex-wrap justify-center gap-2 lg:justify-start">
-            {["Acceso prioritario", landing.waitlist.microcopy].map((item) => (
+            {["Acceso prioritario", "Sin compromiso"].map((item) => (
               <span
                 key={item}
                 className="rounded-md border border-[rgba(35,151,173,0.18)] bg-white/80 px-3 py-1.5 text-sm font-semibold text-[var(--darquis-blue-dark)]"

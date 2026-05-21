@@ -25,7 +25,8 @@ export function Header() {
         <WaitlistTrigger
           className="darquis-focus inline-flex h-10 shrink-0 items-center justify-center rounded-lg border border-[rgba(255,255,255,0.42)] bg-[var(--darquis-blue)] px-3 text-[0.72rem] font-semibold !text-white shadow-none transition duration-200 hover:-translate-y-0.5 hover:bg-[var(--darquis-blue-dark)] sm:h-11 sm:px-5 sm:text-sm"
         >
-          {landing.header.cta}
+          <span className="sm:hidden">Lista de espera</span>
+          <span className="hidden sm:inline">{landing.header.cta}</span>
         </WaitlistTrigger>
       </div>
     </header>

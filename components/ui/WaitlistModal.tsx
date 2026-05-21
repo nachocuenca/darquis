@@ -92,12 +92,13 @@ export function WaitlistModal() {
       />
 
       <div
-        className="darquis-modal-panel darquis-blueprint-shell relative w-full max-w-[52rem] overflow-hidden rounded-xl border border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(232,246,248,0.90))] p-4 shadow-[0_34px_110px_rgba(5,30,44,0.30)] sm:p-6"
+        className="darquis-modal-panel darquis-blueprint-shell relative w-full max-w-[52rem] overflow-hidden rounded-xl border border-white/70 bg-[linear-gradient(135deg,rgba(255,255,255,0.98),rgba(232,246,248,0.90))] shadow-[0_34px_110px_rgba(5,30,44,0.30)]"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={descriptionId}
       >
+        {/* Decorative background — kept outside scroll so it always fills the visible panel */}
         <Image
           src={visualAssets.ambient}
           alt=""
@@ -124,51 +125,58 @@ export function WaitlistModal() {
           <circle cx="376" cy="214" r="5" fill="currentColor" fillOpacity="0.22" />
         </svg>
 
-        <button
-          className="darquis-focus absolute right-4 top-4 z-10 flex h-9 w-9 items-center justify-center rounded-lg border border-[rgba(35,151,173,0.18)] bg-white/84 text-sm font-semibold text-[var(--darquis-ink)] shadow-sm transition hover:-translate-y-0.5 hover:border-[rgba(35,151,173,0.38)]"
-          type="button"
-          aria-label="Cerrar"
-          onClick={() => setIsOpen(false)}
-        >
-          X
-        </button>
-
-        <div className="relative grid gap-5 lg:grid-cols-[0.72fr_1fr] lg:items-center">
-          <div className="pr-8 text-left">
-            <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--darquis-blue-dark)]">
-              Lista de espera
-            </p>
-            <h2
-              id={titleId}
-              className="mt-3 text-3xl font-semibold leading-tight text-[var(--darquis-ink)] sm:text-4xl"
+        {/* Scrollable content — constrained to viewport height so the form is always reachable */}
+        <div className="relative flex max-h-[calc(100dvh-4rem)] flex-col overflow-y-auto overscroll-contain">
+          {/* Sticky close button — stays visible as user scrolls */}
+          <div className="sticky top-0 z-10 flex justify-end px-4 pt-4 sm:px-6 sm:pt-5">
+            <button
+              className="darquis-focus flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[rgba(35,151,173,0.18)] bg-white/90 text-sm font-semibold text-[var(--darquis-ink)] shadow-sm transition hover:-translate-y-0.5 hover:border-[rgba(35,151,173,0.38)]"
+              type="button"
+              aria-label="Cerrar"
+              onClick={() => setIsOpen(false)}
             >
-              Únete a las primeras versiones de
-              <span className="mt-1 block">
-                <Image
-                  src="/brand/darquis-marca-normal.png"
-                  alt="Darquis"
-                  width={244}
-                  height={72}
-                  className="-ml-1 h-16 w-auto sm:h-20"
-                />
-              </span>
-            </h2>
-            <p id={descriptionId} className="mt-3 text-base leading-7 text-[var(--darquis-muted)]">
-              Déjanos tu email profesional y tu perfil. Te avisaremos cuando abramos el acceso para probar el software con técnicos reales.
-            </p>
-            <div className="mt-5 flex flex-wrap gap-2">
-              {["Acceso prioritario", "Sin compromiso", "Sin spam"].map((item) => (
-                <span
-                  key={item}
-                  className="rounded-md border border-[rgba(35,151,173,0.18)] bg-white/78 px-3 py-1.5 text-sm font-semibold text-[var(--darquis-blue-dark)]"
-                >
-                  {item}
-                </span>
-              ))}
-            </div>
+              ×
+            </button>
           </div>
 
-          <WaitlistForm ctaLabel={landing.waitlist.cta} source="modal" />
+          {/* Content grid */}
+          <div className="relative grid gap-5 px-4 pb-5 pt-2 sm:px-6 sm:pb-6 lg:grid-cols-[0.72fr_1fr] lg:items-center">
+            <div className="text-left">
+              <p className="text-xs font-semibold uppercase tracking-[0.12em] text-[var(--darquis-blue-dark)]">
+                Lista de espera
+              </p>
+              <h2
+                id={titleId}
+                className="mt-3 text-2xl font-semibold leading-tight text-[var(--darquis-ink)] sm:text-3xl lg:text-4xl"
+              >
+                Únete a las primeras versiones de
+                <span className="mt-1 block">
+                  <Image
+                    src="/brand/darquis-marca-normal.png"
+                    alt="Darquis"
+                    width={244}
+                    height={72}
+                    className="-ml-1 h-12 w-auto sm:h-16 lg:h-20"
+                  />
+                </span>
+              </h2>
+              <p id={descriptionId} className="mt-3 text-sm leading-6 text-[var(--darquis-muted)] sm:text-base sm:leading-7">
+                Déjanos tu email profesional y tu perfil. Te avisaremos cuando abramos el acceso para probar el software con técnicos reales.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-2">
+                {["Acceso prioritario", "Sin compromiso"].map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-md border border-[rgba(35,151,173,0.18)] bg-white/78 px-3 py-1.5 text-sm font-semibold text-[var(--darquis-blue-dark)]"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            <WaitlistForm ctaLabel={landing.waitlist.cta} source="modal" />
+          </div>
         </div>
       </div>
     </div>
