@@ -438,7 +438,7 @@ function PrivacyField({
           >
             política de privacidad
           </Link>{" "}
-          y recibir información sobre Darquis.
+          y solicito recibir información sobre el acceso privado y las primeras pruebas de Darquis.
         </span>
       </label>
       {error ? (

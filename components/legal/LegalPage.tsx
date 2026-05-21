@@ -25,10 +25,7 @@ export function LegalPage({ title, intro, sections }: LegalPageProps) {
           </Link>
 
           <div className="mt-8 rounded-lg border border-[var(--darquis-border)] bg-[#fbfdfe] p-5 sm:p-8">
-            <p className="text-sm font-semibold uppercase text-[var(--darquis-blue-dark)]">
-              Texto base pendiente de revisión legal.
-            </p>
-            <h1 className="mt-4 text-3xl font-semibold leading-tight text-[var(--darquis-ink)] sm:text-4xl">
+          <h1 className="mt-4 text-3xl font-semibold leading-tight text-[var(--darquis-ink)] sm:text-4xl">
               {title}
             </h1>
             <p className="mt-4 text-base leading-7 text-[var(--darquis-muted)] sm:text-lg sm:leading-8">
